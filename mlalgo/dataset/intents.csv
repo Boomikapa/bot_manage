@@ -1,0 +1,54 @@
+text,intent
+hello,greeting
+hi,greeting
+hey there,greeting
+how's the weather,weather
+will it rain today,weather
+is it sunny,weather
+who won the match,sports
+football score,sports
+tell me about AI,technology
+what is machine learning,technology
+intent,pattern
+greeting,hello
+greeting,hi
+greeting,hey
+greeting,good morning
+greeting,good evening
+goodbye,bye
+goodbye,see you later
+goodbye,goodbye
+goodbye,take care
+thanks,thanks
+thanks,thank you
+thanks,thx
+thanks,thanks a lot
+weather,what's the weather
+weather,tell me the weather
+weather,is it raining
+weather,is it sunny today
+time,what's the time
+time,tell me the time
+time,current time
+date,what's the date
+date,today's date
+date,what day is it
+joke,tell me a joke
+joke,make me laugh
+news,what's the news
+news,today's news
+news,latest news
+sports,sports news
+sports,who won the match
+sports,cricket updates
+music,play a song
+music,sing me something
+music,play music
+chat,how are you
+chat,what's up
+chat,how's it going
+chat,tell me something
+math,what is 2 + 2
+math,solve 10 minus 3
+math,what's 15 * 3
+math,divide 100 by 4

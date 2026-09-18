@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Chatbot 🤖</title>
+    <link rel="stylesheet" href="static\style.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+        }
+
+        .history-column {
+            width: 250px;
+            background-color: #f3f3f3;
+            border-right: 1px solid #ccc;
+            padding: 10px;
+            overflow-y: auto;
+        }
+
+        .history-column h2 {
+            margin-top: 0;
+        }
+
+        .history-entry {
+            margin-bottom: 8px;
+            background-color: #fff;
+            padding: 6px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .chat-box {
+            flex: 1;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #fff;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 10px;
+        }
+
+        #message {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+
+        .msg {
+            margin: 5px 0;
+        }
+
+        .user { color: blue; }
+        .bot { color: green; }
+    </style>
+</head>
+<body>
+
+    <!-- History Column -->
+    <div class="history-column">
+        <h2>📜 History</h2>
+        <div id="history-list"></div>
+    </div>
+
+    <!-- Main Chat Area -->
+    <div class="container">
+        <h1>🌟AI Chatbot</h1>
+        <div id="chat-box" class="chat-box"></div>
+
+        <div class="input-area">
+            <input type="text" id="message" placeholder="Type your message..." autofocus>
+            <button onclick="sendMessage()">Send</button>
+            <button onclick="clearChat()" style="padding: 8px 12px; font-size: 14px; cursor: pointer;">🧹 Clear Chat</button>
+        </div>
+    </div>
+
+    <script>
+        // Load chat + user history on page load
+        window.onload = function () {
+            const chatBox = document.getElementById("chat-box");
+            const historyList = document.getElementById("history-list");
+            const history = JSON.parse(localStorage.getItem("chatHistory")) || [];
+
+            history.forEach(entry => {
+                // Full conversation in chat box
+                chatBox.innerHTML += `<div class="msg ${entry.sender}"><strong>${entry.label}:</strong> ${entry.text}</div>`;
+
+                // Only user messages in history column
+                if (entry.sender === "user") {
+                    const histItem = document.createElement("div");
+                    histItem.classList.add("history-entry");
+                    histItem.textContent = entry.text;
+                    historyList.appendChild(histItem);
+                }
+            });
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const messageInput = document.getElementById("message");
+            const message = messageInput.value;
+            if (!message.trim()) return;
+
+            const chatBox = document.getElementById("chat-box");
+
+            const userMsgHTML = `<div class="msg user"><strong>You:</strong> ${message}</div>`;
+            chatBox.innerHTML += userMsgHTML;
+            saveToHistory("user", "You", message);
+            addToHistoryUI(message);
+            messageInput.value = "";
+
+            const res = await fetch("/ask", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: message })
+            });
+
+            const data = await res.json();
+            const botMsgHTML = `<div class="msg bot"><strong>Bot:</strong> ${data.response}</div>`;
+            chatBox.innerHTML += botMsgHTML;
+            saveToHistory("bot", "Bot", data.response);
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function saveToHistory(sender, label, text) {
+            const history = JSON.parse(localStorage.getItem("chatHistory")) || [];
+            history.push({ sender, label, text });
+            localStorage.setItem("chatHistory", JSON.stringify(history));
+        }
+
+        function addToHistoryUI(text) {
+            const historyList = document.getElementById("history-list");
+            const histItem = document.createElement("div");
+            histItem.classList.add("history-entry");
+            histItem.textContent = text;
+            historyList.appendChild(histItem);
+        }
+
+        function clearChat() {
+        localStorage.removeItem("chatHistory");
+        document.getElementById("chat-box").innerHTML = "";
+        document.getElementById("history-list").innerHTML = "";
+}
+
+        
+    </script>
+</body>
+</html>
